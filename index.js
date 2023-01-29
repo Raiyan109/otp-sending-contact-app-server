@@ -1,80 +1,143 @@
-const express = require('express');
-const expresshbs = require('express-handlebars');
+import dotenv from 'dotenv'
+dotenv.config()
+import express from 'express'
+import cors from 'cors'
+import userRoutes from './routes/userRoutes.js'
 
-const bodyParser = require('body-parser');
+const app = express()
+const port = process.env.PORT
 
-const messagebird = require('messagebird').initClient('API_ACCESS_KEY')
+app.use(cors())
+app.use(express.json())
 
-var params = {
-    'originator': 'TestMessage',
-    'recipients': [
-        '+8801617910378'
-    ],
-    'body': 'This is a test message'
-};
 
-messagebird.messages.create(params, function (err, response) {
-    if (err) {
-        return console.log(err);
-    }
-    console.log(response);
-});
+// Load Routes
+app.use("/api/user", userRoutes)
 
-const app = express();
 
-app.engine('handlebars', expresshbs.engine({ defaultLayout: 'main' }))
+// app.get('/', (req, res) => {
+//     res.send('hello')
+// })
 
-app.set('view engine', 'handlebars')
-
-app.use(bodyParser.urlencoded({ extended: true }))
-
-app.get('/', (req, res) => {
-    res.render('step1')
+app.listen(port, () => {
+    console.log(`Server listening at ${port}`);
 })
 
-app.post('/step2', (req, res) => {
-    let number = req.body.number
 
-    messagebird.verify.create(number, {
-        template: 'Your Verification code is %token'
-    }, function (err, response) {
-        if (err) {
-            console.log(err);
-            res.render('step1', {
-                error: err.errors[0].description
-            })
-        }
-        else {
-            console.log(response);
-            res.render('step2', {
-                id: response.id
-            })
-        }
-    })
-})
 
-app.post('/step3', (req, res) => {
-    let id = req.body.id
-    let token = req.body.token
 
-    messagebird.verify.verify(id, token, (err, response) => {
-        if (err) {
-            res.render('step2', {
-                error: err.errors[0].description,
-                id: id
-            })
-        }
-        else {
-            res.render('step3', {
-                id: response.id
-            })
-        }
-    })
-})
 
-app.listen(5000, () => {
-    console.log('App is running on Port 5000');
-})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const express = require('express');
+// const expresshbs = require('express-handlebars');
+
+// const bodyParser = require('body-parser');
+
+// const messagebird = require('messagebird').initClient('bZf2eWnn9pgjySx1ZfQmvnnnz')
+
+
+// // Set up and configure the express framework
+// const app = express();
+// app.engine('handlebars', expresshbs.engine({ defaultLayout: 'main' }))
+// app.set('view engine', 'handlebars')
+// app.use(bodyParser.urlencoded({ extended: true }))
+
+// app.get('/', (req, res) => {
+//     res.render('step1')
+// })
+
+
+// // Handle phone number submission
+// app.post('/step2', (req, res) => {
+//     let number = req.body.number
+
+
+//     // Make request to Verify API
+//     messagebird.verify.create(number, {
+//         template: 'Your Verification code is %token'
+//     }, function (err, response) {
+//         if (err) {
+//             console.log(err);
+//             res.render('step1', {
+//                 error: err.errors[0].description
+//             })
+//         }
+//         else {
+//             console.log(response);
+//             res.render('step2', {
+//                 id: response.id
+//             })
+//         }
+//     })
+// })
+
+
+// // Verify whether the token is correct
+// app.post('/step3', (req, res) => {
+//     let id = req.body.id
+//     let token = req.body.token
+
+//     // Make request to Verify API
+//     messagebird.verify.verify(id, token, (err, response) => {
+//         if (err) {
+//             res.render('step2', {
+//                 error: err.errors[0].description,
+//                 id: id
+//             })
+//         }
+//         else {
+//             res.render('step3')
+//         }
+//     })
+// })
+
+// app.listen(5000, () => {
+//     console.log('App is running on Port 5000');
+// })
 
 
 
