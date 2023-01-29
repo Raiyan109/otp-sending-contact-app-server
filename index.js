@@ -3,11 +3,11 @@ const expresshbs = require('express-handlebars');
 
 const bodyParser = require('body-parser');
 
-const messagebird = require('messagebird')('J3ztvuCWoT7wgUUZyX18rqUnB')
+const messagebird = require('messagebird').initClient('J3ztvuCWoT7wgUUZyX18rqUnB')
 
 const app = express();
 
-app.engine('handlebars', expresshbs({ defaultLayout: 'main' }))
+app.engine('handlebars', expresshbs.engine({ defaultLayout: 'main' }))
 
 app.set('view engine', 'handlebars')
 
