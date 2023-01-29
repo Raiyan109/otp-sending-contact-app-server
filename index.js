@@ -3,7 +3,22 @@ const expresshbs = require('express-handlebars');
 
 const bodyParser = require('body-parser');
 
-const messagebird = require('messagebird').initClient('J3ztvuCWoT7wgUUZyX18rqUnB')
+const messagebird = require('messagebird').initClient('API_ACCESS_KEY')
+
+var params = {
+    'originator': 'TestMessage',
+    'recipients': [
+        '+8801617910378'
+    ],
+    'body': 'This is a test message'
+};
+
+messagebird.messages.create(params, function (err, response) {
+    if (err) {
+        return console.log(err);
+    }
+    console.log(response);
+});
 
 const app = express();
 
@@ -17,6 +32,45 @@ app.get('/', (req, res) => {
     res.render('step1')
 })
 
+app.post('/step2', (req, res) => {
+    let number = req.body.number
+
+    messagebird.verify.create(number, {
+        template: 'Your Verification code is %token'
+    }, function (err, response) {
+        if (err) {
+            console.log(err);
+            res.render('step1', {
+                error: err.errors[0].description
+            })
+        }
+        else {
+            console.log(response);
+            res.render('step2', {
+                id: response.id
+            })
+        }
+    })
+})
+
+app.post('/step3', (req, res) => {
+    let id = req.body.id
+    let token = req.body.token
+
+    messagebird.verify.verify(id, token, (err, response) => {
+        if (err) {
+            res.render('step2', {
+                error: err.errors[0].description,
+                id: id
+            })
+        }
+        else {
+            res.render('step3', {
+                id: response.id
+            })
+        }
+    })
+})
 
 app.listen(5000, () => {
     console.log('App is running on Port 5000');
